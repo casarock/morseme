@@ -66,6 +66,11 @@
               this.asciiMap[this.morseMap[key]] = key;
             }
         }
+
+        this.audioShort = null;
+        this.audioLong = null;
+        this.shortSound = 'short.wav';
+        this.longSound = 'long.wav';
     }
 
     Morser.prototype.textToMorse = function(text) {
@@ -85,7 +90,39 @@
         }.bind(this));
 
         return resultText.join('');
-    }
+    };
+
+    Morser.prototype.playMorseCode = function (morseCode) {
+        if (this.audioLong === null || this.audioLong === null) {
+            this.audioLong = new Audio(this.longSound);
+            this.audioShort = new Audio(this.shortSound);
+        }
+
+        var soundCoder = function(arr) {
+            var toPause = 250;
+            var beep = arr.shift();
+            if (beep === ".") {
+                this.audioShort.play();
+            }
+
+            if (beep === "-") {
+                this.audioLong.play();
+            }
+
+            if (beep === " ") {
+                toPause = 350;
+            }
+
+            if (arr.length > 0) {
+                window.setTimeout(function() {
+                    soundCoder(arr);
+                }.bind(this), toPause);
+            }
+        }.bind(this);
+
+        var codeArray = morseCode.split('');
+        soundCoder(codeArray);
+    };
 
     window.Morser = Morser;
 
